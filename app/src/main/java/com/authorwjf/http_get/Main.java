@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class Main extends Activity implements OnClickListener {
 
@@ -96,6 +97,9 @@ public class Main extends Activity implements OnClickListener {
 						 // Getting JSON Array node
 						 contacts = jsonObj.getJSONArray(TAG_CONTACTS);
 
+						 Toast.makeText(Main.this, contacts.length(), Toast.LENGTH_SHORT).show();
+						 Log.d("Contacts size", String.valueOf(contacts.length()));
+
 						 // looping through All Contacts
 						 for (int i = 0; i < contacts.length(); i++) {
 							 JSONObject c = contacts.getJSONObject(i);
@@ -123,6 +127,23 @@ public class Main extends Activity implements OnClickListener {
 
 							 // adding contact to contact list
 							 contactList.add(contact);
+
+							 text = "";
+							 StringBuffer sb = new StringBuffer();
+
+							 Toast.makeText(Main.this, contactList.size(), Toast.LENGTH_SHORT).show();
+
+							 for (int j = 0; j < contactList.size(); j++) {
+								 HashMap<String, String> o =  contactList.get(j);
+
+								 sb.append("ID: ").append((String)o.get(TAG_ID))
+								 .append("TAG_NAME: ").append((String)o.get(TAG_NAME))
+										 .append("TAG_EMAIL: ").append((String)o.get(TAG_EMAIL))
+										 .append("TAG_PHONE_MOBILE: ").append((String)o.get(TAG_PHONE_MOBILE));
+
+								 text = sb.toString();
+
+							 }
 						 }
 					 } catch (JSONException e) {
 						 e.printStackTrace();
