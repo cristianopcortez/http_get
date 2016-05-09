@@ -50,7 +50,10 @@ public class Main extends Activity implements OnClickListener {
 		protected String doInBackground(Void... params) {
 			 HttpClient httpClient = new DefaultHttpClient();
 			 HttpContext localContext = new BasicHttpContext();
-             HttpGet httpGet = new HttpGet("http://www.cheesejedi.com/rest_services/get_big_cheese.php?puzzle=1");
+             //HttpGet httpGet = new HttpGet("http://www.cheesejedi.com/rest_services/get_big_cheese.php?puzzle=1");
+			 //HttpGet httpGet = new HttpGet("http://localhost/testews.php");
+			 HttpGet httpGet = new HttpGet("http://192.168.96.9/testews.php");
+			// [{"id":"59","level":"1","time_in_secs":"4","par":"0","initials":"TNF","quote":"Hey hey ole hickery", "time_stamp":"2012-03-03 04:36:15"}]
              String text = null;
              try {
                    HttpResponse response = httpClient.execute(httpGet, localContext);
