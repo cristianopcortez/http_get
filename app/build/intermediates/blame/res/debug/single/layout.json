@@ -2,5 +2,9 @@
     {
         "merged": "C:\\workspaces\\android\\AndroidStudioProjects\\http_get\\app\\build\\intermediates\\res\\merged\\debug\\layout\\main.xml",
         "source": "C:\\workspaces\\android\\AndroidStudioProjects\\http_get\\app\\src\\main\\res\\layout\\main.xml"
+    },
+    {
+        "merged": "C:\\workspaces\\android\\AndroidStudioProjects\\http_get\\app\\build\\intermediates\\res\\merged\\debug\\layout\\list_item.xml",
+        "source": "C:\\workspaces\\android\\AndroidStudioProjects\\http_get\\app\\src\\main\\res\\layout\\list_item.xml"
     }
 ]

@@ -17,6 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,8 +26,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+// extends ListActivity
 public class Main extends Activity implements OnClickListener {
 
 	// contacts JSONArray
@@ -46,17 +52,32 @@ public class Main extends Activity implements OnClickListener {
 	// Hashmap for ListView
 	ArrayList<HashMap<String, String>> contactList;
 
+    private ProgressDialog pDialog;
+
+    private ListView lv;
+    private ListAdapter adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         findViewById(R.id.my_button).setOnClickListener(this);
+
+        //ListView lv = this.getListView();
+        lv = (ListView) findViewById(R.id.list);
     }
 
 	@Override
 	public void onClick(View arg0) {
 		Button b = (Button)findViewById(R.id.my_button);
 		b.setClickable(false);
+
+        // Showing progress dialog
+        pDialog = new ProgressDialog(Main.this);
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
 		new LongRunningGetIO().execute();
 	}
 	
@@ -89,15 +110,16 @@ public class Main extends Activity implements OnClickListener {
                    HttpEntity entity = response.getEntity();
                    text = getASCIIContentFromEntity(entity);
 
+				 Log.d("text:", text);
 
 				 if (text != null) {
-					 try {
 						 JSONObject jsonObj = new JSONObject(text);
+                         contactList = new ArrayList<HashMap<String, String>>();
 
 						 // Getting JSON Array node
 						 contacts = jsonObj.getJSONArray(TAG_CONTACTS);
 
-						 Toast.makeText(Main.this, contacts.length(), Toast.LENGTH_SHORT).show();
+//						 Toast.makeText(Main.this, contacts.length(), Toast.LENGTH_SHORT).show();
 						 Log.d("Contacts size", String.valueOf(contacts.length()));
 
 						 // looping through All Contacts
@@ -116,6 +138,15 @@ public class Main extends Activity implements OnClickListener {
 							 String home = phone.getString(TAG_PHONE_HOME);
 							 String office = phone.getString(TAG_PHONE_OFFICE);
 
+                             Log.d("id: ", id);
+                             Log.d("name: ", name);
+                             Log.d("email: ", email);
+                             Log.d("address: ", address);
+                             Log.d("gender: ", gender);
+                             Log.d("mobile: ", mobile);
+                             Log.d("home: ", home);
+                             Log.d("office: ", office);
+
 							 // tmp hashmap for single contact
 							 HashMap<String, String> contact = new HashMap<String, String>();
 
@@ -128,31 +159,47 @@ public class Main extends Activity implements OnClickListener {
 							 // adding contact to contact list
 							 contactList.add(contact);
 
-							 text = "";
-							 StringBuffer sb = new StringBuffer();
+//							 text = "";
+//							 StringBuffer sb = new StringBuffer();
+//
+//
+//
+//							 for (int j = 0; j < contactList.size(); j++) {
+//								 HashMap<String, String> o =  contactList.get(j);
+//
+//								 sb.append("ID: ").append((String)o.get(TAG_ID))
+//								 .append("TAG_NAME: ").append((String)o.get(TAG_NAME))
+//										 .append("TAG_EMAIL: ").append((String)o.get(TAG_EMAIL))
+//										 .append("TAG_PHONE_MOBILE: ").append((String)o.get(TAG_PHONE_MOBILE));
+//
+//								 text = sb.toString();
+//
+//							 }
 
-							 Toast.makeText(Main.this, contactList.size(), Toast.LENGTH_SHORT).show();
-
-							 for (int j = 0; j < contactList.size(); j++) {
-								 HashMap<String, String> o =  contactList.get(j);
-
-								 sb.append("ID: ").append((String)o.get(TAG_ID))
-								 .append("TAG_NAME: ").append((String)o.get(TAG_NAME))
-										 .append("TAG_EMAIL: ").append((String)o.get(TAG_EMAIL))
-										 .append("TAG_PHONE_MOBILE: ").append((String)o.get(TAG_PHONE_MOBILE));
-
-								 text = sb.toString();
-
-							 }
 						 }
-					 } catch (JSONException e) {
-						 e.printStackTrace();
-					 }
+
+                     Log.d("contactList size", String.valueOf(contactList.size()));
+
+                     // Dismiss the progress dialog
+                     if (pDialog.isShowing())
+                         pDialog.dismiss();
+                     /**
+                      * Updating parsed JSON data into ListView
+                      * */
+                     adapter = new SimpleAdapter(
+                             Main.this, contactList,
+                             R.layout.list_item, new String[] { TAG_NAME, TAG_EMAIL,
+                             TAG_PHONE_MOBILE }, new int[] { R.id.name,
+                             R.id.email, R.id.mobile });
+
+                     //setListAdapter(adapter);
+
 				 } else {
 					 Log.e("ServiceHandler", "Couldn't get any data from the url");
 				 }
 
              } catch (Exception e) {
+				 e.printStackTrace();
             	 return e.getLocalizedMessage();
              }
              return text;
@@ -162,9 +209,12 @@ public class Main extends Activity implements OnClickListener {
 			if (results!=null) {
 				EditText et = (EditText)findViewById(R.id.my_edit);
 				et.setText(results);
+
+                lv.setAdapter(adapter);
 			}
 			Button b = (Button)findViewById(R.id.my_button);
 			b.setClickable(true);
+
 		}
     }
 }
